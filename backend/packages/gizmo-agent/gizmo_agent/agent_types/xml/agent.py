@@ -64,10 +64,9 @@ def get_xml_agent(tools, system_message, bedrock=False):
     )
     llm_with_stop = model.bind(stop=["</tool_input>"])
 
-    agent = (
+    return (
         {"messages": lambda x: construct_chat_history(x["messages"])}
         | prompt
         | llm_with_stop
         | parse_output
     )
-    return agent

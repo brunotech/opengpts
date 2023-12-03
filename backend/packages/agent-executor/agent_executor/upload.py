@@ -29,8 +29,7 @@ def _guess_mimetype(file_bytes: bytes) -> str:
         )
 
     mime = magic.Magic(mime=True)
-    mime_type = mime.from_buffer(file_bytes)
-    return mime_type
+    return mime.from_buffer(file_bytes)
 
 
 def _convert_ingestion_input_to_blob(data: BinaryIO) -> Blob:

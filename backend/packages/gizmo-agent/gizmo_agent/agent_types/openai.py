@@ -9,12 +9,7 @@ from langchain.tools.render import format_tool_to_openai_function
 def get_openai_function_agent(
     tools, system_message, gpt_4: bool = False, azure: bool = False
 ):
-    if not azure:
-        if gpt_4:
-            llm = ChatOpenAI(model="gpt-4-1106-preview", temperature=0, streaming=True)
-        else:
-            llm = ChatOpenAI(model="gpt-3.5-turbo-1106", temperature=0, streaming=True)
-    else:
+    if azure:
         llm = AzureChatOpenAI(
             temperature=0,
             deployment_name=os.environ["AZURE_OPENAI_DEPLOYMENT_NAME"],
@@ -23,6 +18,10 @@ def get_openai_function_agent(
             openai_api_key=os.environ["AZURE_OPENAI_API_KEY"],
             streaming=True,
         )
+    elif gpt_4:
+        llm = ChatOpenAI(model="gpt-4-1106-preview", temperature=0, streaming=True)
+    else:
+        llm = ChatOpenAI(model="gpt-3.5-turbo-1106", temperature=0, streaming=True)
     prompt = ChatPromptTemplate.from_messages(
         [
             ("system", system_message),
@@ -35,5 +34,4 @@ def get_openai_function_agent(
         )
     else:
         llm_with_tools = llm
-    agent = prompt | llm_with_tools | OpenAIFunctionsAgentOutputParser()
-    return agent
+    return prompt | llm_with_tools | OpenAIFunctionsAgentOutputParser()

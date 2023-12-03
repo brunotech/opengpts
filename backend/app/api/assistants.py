@@ -47,10 +47,10 @@ def get_asistant(
     aid: AssistantID,
 ) -> Assistant:
     """Get an assistant by ID."""
-    assistant = storage.get_assistant(opengpts_user_id, aid)
-    if not assistant:
+    if assistant := storage.get_assistant(opengpts_user_id, aid):
+        return assistant
+    else:
         raise HTTPException(status_code=404, detail="Assistant not found")
-    return assistant
 
 
 @router.post("")

@@ -19,22 +19,20 @@ from permchain.checkpoint.base import BaseCheckpointAdapter
 def _create_agent_message(
     output: AgentAction | AgentFinish
 ) -> list[AnyMessage] | AnyMessage:
-    if isinstance(output, AgentAction):
-        if isinstance(output, AgentActionMessageLog):
-            output.message_log[-1].additional_kwargs["agent"] = output
-            messages = output.message_log
-            output.message_log = []  # avoid circular reference for json dumps
-            return messages
-        else:
-            return AIMessage(
-                content=output.log,
-                additional_kwargs={"agent": output},
-            )
-    else:
+    if not isinstance(output, AgentAction):
         return AIMessage(
             content=output.return_values["output"],
             additional_kwargs={"agent": output},
         )
+    if not isinstance(output, AgentActionMessageLog):
+        return AIMessage(
+            content=output.log,
+            additional_kwargs={"agent": output},
+        )
+    output.message_log[-1].additional_kwargs["agent"] = output
+    messages = output.message_log
+    output.message_log = []  # avoid circular reference for json dumps
+    return messages
 
 
 def _create_function_message(
@@ -44,7 +42,7 @@ def _create_function_message(
         try:
             content = json.dumps(observation, ensure_ascii=False)
         except Exception:
-            content = str(observation)
+            content = observation
     else:
         content = observation
     return FunctionMessage(
