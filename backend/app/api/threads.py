@@ -58,10 +58,10 @@ def get_thread(
     tid: ThreadID,
 ) -> Thread:
     """Get a thread by ID."""
-    thread = storage.get_thread(opengpts_user_id, tid)
-    if not thread:
+    if thread := storage.get_thread(opengpts_user_id, tid):
+        return thread
+    else:
         raise HTTPException(status_code=404, detail="Thread not found")
-    return thread
 
 
 @router.post("")

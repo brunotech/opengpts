@@ -44,10 +44,10 @@ def load(keys: list[str], values: list[bytes]) -> dict:
 
 def _get_redis_client() -> RedisType:
     """Get a Redis client."""
-    url = os.environ.get("REDIS_URL")
-    if not url:
+    if url := os.environ.get("REDIS_URL"):
+        return get_client(url)
+    else:
         raise ValueError("REDIS_URL not set")
-    return get_client(url)
 
 
 def list_assistants(user_id: str) -> List[Assistant]:

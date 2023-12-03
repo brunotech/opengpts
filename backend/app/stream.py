@@ -41,10 +41,7 @@ class StreamMessagesHandler(BaseCallbackHandler):
         if chunk is None:
             chunk = ChatGenerationChunk(message=AIMessageChunk(content=token))
         # If we get something we don't know how to handle, ignore it
-        if not (
-            isinstance(chunk, ChatGenerationChunk)
-            or isinstance(chunk, BaseMessageChunk)
-        ):
+        if not (isinstance(chunk, (ChatGenerationChunk, BaseMessageChunk))):
             return
         # Convert messages to ChatGenerationChunks (workaround for old langchahin)
         if isinstance(chunk, BaseMessageChunk):
